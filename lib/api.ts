@@ -313,5 +313,5 @@ class ApiClient {
   }
 }
 
-const BASE_URL = "https://genetics-api.onrender.com"
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://genetics-api.onrender.com"
 export const apiClient = new ApiClient(BASE_URL)

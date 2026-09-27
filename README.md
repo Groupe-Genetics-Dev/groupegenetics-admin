@@ -7,6 +7,33 @@
 
 ---
 
+## ⚡ Démarrage rapide
+
+### 🐳 Avec Docker (recommandé)
+
+Prérequis : Docker + Docker Compose v2, et l'API `groupegenetics-api` démarrée (voir son README).
+
+```bash
+cp .env.example .env          # NEXT_PUBLIC_API_URL = URL de l'API vue depuis le navigateur
+docker compose up -d --build
+```
+
+- Interface admin : http://localhost:3000
+- `NEXT_PUBLIC_API_URL` est intégrée au bundle au moment du build : après l'avoir modifiée, relancer `docker compose up -d --build`.
+- Arrêter : `docker compose down`.
+
+### 💻 En local (sans Docker)
+
+Prérequis : Node.js 20+ (22 recommandé).
+
+```bash
+npm install                # .npmrc active legacy-peer-deps (React 19)
+echo "NEXT_PUBLIC_API_URL=http://localhost:8000" > .env.local
+npm run dev                # http://localhost:3000
+```
+
+Build de production : `npm run build && npm start`.
+
 ## 📋 Table des Matières
 
 - [À Propos](#-à-propos)
@@ -376,31 +403,11 @@ Configuration `vercel.json` :
 
 ### 🐳 Docker
 
-```dockerfile
-FROM node:18-alpine AS base
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-
-FROM base AS build
-COPY . .
-RUN npm run build
-
-FROM node:18-alpine AS production
-WORKDIR /app
-COPY --from=build /app/.next ./.next
-COPY --from=build /app/public ./public
-COPY --from=build /app/package.json ./package.json
-COPY --from=build /app/node_modules ./node_modules
-
-EXPOSE 3000
-CMD ["npm", "start"]
-```
+Le projet fournit un `Dockerfile` multi-stage (sortie Next.js `standalone`) et un `docker-compose.yml`.
+Voir [Démarrage rapide](#-démarrage-rapide).
 
 ```bash
-# Build et run
-docker build -t incidents-app .
-docker run -p 3000:3000 incidents-app
+docker compose up -d --build
 ```
 
 ### ☁️ Autres Plateformes
