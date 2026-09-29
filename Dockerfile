@@ -5,6 +5,18 @@ RUN apk add --no-cache libc6-compat
 COPY package.json package-lock.json .npmrc ./
 RUN npm ci
 
+# Next.js a besoin du compilateur SWC natif de la plateforme (ex. @next/swc-linux-arm64-musl
+# sur Mac Apple Silicon). npm ci peut l'omettre quand le package-lock a été généré sur une autre
+# architecture : on vérifie qu'il se charge et on l'installe ici sinon, pour que "next build"
+# n'ait jamais à le télécharger (échec "fetch failed" sur les réseaux filtrés).
+RUN SWC="@next/swc-linux-$(node -p process.arch)-musl" \
+    && if ! node -e "require('$SWC')" 2>/dev/null; then \
+         echo "Installation de $SWC" \
+         && npm install --no-save "$SWC@$(node -p "require('next/package.json').version")"; \
+       fi \
+    && node -e "require('$SWC')" \
+    && echo "Compilateur SWC OK : $SWC"
+
 # ---------- Étape 2 : build Next.js ----------
 FROM node:22-alpine AS builder
 WORKDIR /app
