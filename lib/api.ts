@@ -52,6 +52,20 @@ export interface LoginResponse {
   role?: "admin" | "client"
 }
 
+export type AccountStatus = "PENDING" | "APPROVED" | "REJECTED"
+
+export interface Account {
+  id: string
+  name: string
+  email: string
+  company?: string | null
+  phone?: string | null
+  createdAt: string
+  updatedAt: string
+  account_status: AccountStatus
+  reviewedAt?: string | null
+}
+
 export interface DateRange {
   start_date: string
   end_date: string
@@ -318,6 +332,24 @@ class ApiClient {
         status: 500,
       }
     }
+  }
+
+  // ----- Gestion des comptes clients -----
+
+  async listAccounts(status?: AccountStatus): Promise<ApiResponse<Account[]>> {
+    const query = status ? `?account_status=${status}` : ""
+    return this.request<Account[]>(`/users/accounts${query}`, { method: "GET" })
+  }
+
+  async approveAccount(userId: string): Promise<ApiResponse<Account>> {
+    return this.request<Account>(`/users/accounts/${userId}/approve`, { method: "PATCH" })
+  }
+
+  async rejectAccount(userId: string, reason?: string): Promise<ApiResponse<Account>> {
+    return this.request<Account>(`/users/accounts/${userId}/reject`, {
+      method: "PATCH",
+      body: JSON.stringify({ reason: reason || null }),
+    })
   }
 }
 

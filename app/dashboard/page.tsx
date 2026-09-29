@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
-import { MoreHorizontal, LogOut, FileText } from "lucide-react"
+import { MoreHorizontal, LogOut, FileText, Users } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { apiClient, type IncidentOut, IncidentStatus, Priority, Category } from "@/lib/api"
 import { useToast } from "@/hooks/use-toast"
@@ -204,6 +204,10 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-bold text-primary">Tableau de Bord des Incidents</h1>
           <div className="flex items-center space-x-4">
             {userName && <span className="text-lg text-primary hidden sm:block">Bienvenue, {userName}</span>}
+            <Button variant="outline" onClick={() => router.push("/accounts")} title="Gestion des comptes" className="gap-2">
+              <Users className="h-5 w-5 text-primary" />
+              <span className="hidden md:inline">Gestion des comptes</span>
+            </Button>
             <Button variant="ghost" size="icon" onClick={handleGenerateReport} title="Générer rapport">
               <FileText className="h-5 w-5 text-primary" />
               <span className="sr-only">Générer rapport</span>
