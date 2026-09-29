@@ -49,6 +49,7 @@ export interface LoginResponse {
   access_token: string
   token_type: string
   user_name: string
+  role?: "admin" | "client"
 }
 
 export interface DateRange {
@@ -175,6 +176,13 @@ class ApiClient {
         return {
           error: data.detail || "Erreur de connexion",
           status: response.status,
+        }
+      }
+      // Ce tableau de bord est réservé aux administrateurs
+      if (data.role && data.role !== "admin") {
+        return {
+          error: "Accès réservé aux administrateurs. Les clients se connectent depuis l'espace support du site.",
+          status: 403,
         }
       }
       this.setToken(data.access_token, data.user_name || username)
